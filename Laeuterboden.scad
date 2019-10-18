@@ -1,10 +1,11 @@
 // Andre Betz
 // github@AndreBetz.de
 
+//MattMillDurchmesser = 497;
 MattMillDurchmesser = 497;
 BlechHoehe          = 2;
 FilterBreite        = 1.3;
-SchlitzLaenge       = 20;
+SchlitzLaenge       = 40;
 SchraubeM5          = 5.5;
 
 $fn=100;
@@ -41,19 +42,19 @@ module BodenBlech(Radius,Hoehe)
         center = false);
 }
 
-module BodenOeffnungenSchlitz(Durchmesser, Laenge, Breite, Hoehe)
+module BodenOeffnungenSchlitz(Durchmesser, Laenge, Breite, Hoehe, abFakX,abFakY)
 {
-    abstandX = Laenge * 4;
-	abstandY = Breite * 2;
+    abstandX = Laenge * abFakX;
+	abstandY = Breite * abFakY;
     countRow = Durchmesser / abstandX;
     countCol = Durchmesser / abstandY;
-    echo(countRow,countCol);
+    echo(Laenge, Breite,abstandX,abstandY,countRow,countCol);
     
     for ( y = [0 : countCol-1] )
         for ( x = [0 : countRow-1] ) {
            pX = x*abstandX;
            pY = y*abstandY;
-           //echo(pX,pY);
+           echo(pX,pY);
            Schlitz(Laenge,Breite,Hoehe,pX,pY);
         }
 }
@@ -68,7 +69,7 @@ module BodenOeffnungenLoch(Durchmesser, Breite, Hoehe)
         for ( x = [0 : countRow-1] ) {
            pX = x*Breite*2;
            pY = y*Breite*2;
-           //echo(pX,pY);
+           echo(Breite,Hoehe,pX,pY);
            Laeuterloch(Breite,Hoehe,pX,pY);
         }
 }
@@ -85,21 +86,29 @@ module Bohrloch(Durchmesser,posX,posY,Hoehe)
 
 module LaeuterBlechSchlitz(Durchmesser,Laenge,Breite,Hoehe,BohrLoch)
 {
+    abFakX = 1.3;
     radius = Durchmesser/2;
     innerQuadrat = radius * sqrt(2);
     abstand = radius-sqrt(radius*radius - innerQuadrat*innerQuadrat/4);
     
     echo(abstand);
     difference() {
-        BodenBlech(Durchmesser/2,Hoehe);
-        translate([-Durchmesser/2+abstand,-Durchmesser/2+abstand+,-1])
-            BodenOeffnungenSchlitz(Durchmesser-abstand*2,Laenge,Breite,Hoehe*3);
+        BodenBlech(radius,Hoehe);
+        
+        translate([-radius+abstand+Laenge*abFakX/2,-radius+abstand,-1])
+            BodenOeffnungenSchlitz(
+                Durchmesser-abstand*2,
+                Laenge,
+                Breite,
+                Hoehe*3,
+                abFakX,4);
         
         Bohrloch (BohrLoch,  -radius+abstand,0,Hoehe*3);
         Bohrloch (BohrLoch,   radius-abstand,0,Hoehe*3);
         Bohrloch (BohrLoch,0, radius-abstand,  Hoehe*3);
         Bohrloch (BohrLoch,0,-radius+abstand,  Hoehe*3);
         Bohrloch (BohrLoch,0,0,Hoehe*3);
+        
     }
 }
 
@@ -120,8 +129,14 @@ module LaeuterBlechLoch(Durchmesser,Filter,Breite,Hoehe,Schraube)
 }
 
 // 2D Projektion fuer SVG Datei
-//projection() 
+projection() 
 { 
-    LaeuterBlechSchlitz(MattMillDurchmesser,FilterBreite,SchlitzLaenge,BlechHoehe,SchraubeM5);
+    
+    LaeuterBlechSchlitz(
+        MattMillDurchmesser,
+        SchlitzLaenge,
+        FilterBreite,
+        BlechHoehe,
+        SchraubeM5);
 }
 
