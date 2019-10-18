@@ -1,8 +1,8 @@
 // Andre Betz
 // github@AndreBetz.de
 
-//MattMillDurchmesser = 497;
-MattMillDurchmesser = 497;
+MattMillDurchmesser 			= 497;
+ClatronicEKA3338Durchmesser  	= 230+115;
 BlechHoehe          = 2;
 FilterBreite        = 1.3;
 SchlitzLaenge       = 40;
@@ -133,7 +133,8 @@ projection()
 { 
     
     LaeuterBlechSchlitz(
-        MattMillDurchmesser,
+//        MattMillDurchmesser,
+        ClatronicEKA3338Durchmesser,
         SchlitzLaenge,
         FilterBreite,
         BlechHoehe,
