@@ -4,7 +4,7 @@
 MattMillDurchmesser = 497;
 BlechHoehe          = 2;
 FilterBreite        = 1.3;
-SchlitzLaenge       = 10;
+SchlitzLaenge       = 20;
 SchraubeM5          = 5.5;
 
 $fn=100;
@@ -43,14 +43,16 @@ module BodenBlech(Radius,Hoehe)
 
 module BodenOeffnungenSchlitz(Durchmesser, Laenge, Breite, Hoehe)
 {
-    countRow = Durchmesser / Laenge / 4;
-    countCol = Durchmesser / Breite / 2;
+    abstandX = Laenge * 4;
+	abstandY = Breite * 2;
+    countRow = Durchmesser / abstandX;
+    countCol = Durchmesser / abstandY;
     echo(countRow,countCol);
     
     for ( y = [0 : countCol-1] )
         for ( x = [0 : countRow-1] ) {
-           pX = x*Laenge*4;
-           pY = y*Breite*2;
+           pX = x*abstandX;
+           pY = y*abstandY;
            //echo(pX,pY);
            Schlitz(Laenge,Breite,Hoehe,pX,pY);
         }
@@ -90,7 +92,7 @@ module LaeuterBlechSchlitz(Durchmesser,Laenge,Breite,Hoehe,BohrLoch)
     echo(abstand);
     difference() {
         BodenBlech(Durchmesser/2,Hoehe);
-        translate([-Durchmesser/2+abstand,-Durchmesser/2+abstand+Laenge*2,-1])
+        translate([-Durchmesser/2+abstand,-Durchmesser/2+abstand+,-1])
             BodenOeffnungenSchlitz(Durchmesser-abstand*2,Laenge,Breite,Hoehe*3);
         
         Bohrloch (BohrLoch,  -radius+abstand,0,Hoehe*3);
