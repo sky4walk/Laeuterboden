@@ -2,7 +2,7 @@
 // github@AndreBetz.de
 
 MattMillDurchmesser 			= 497;
-ClatronicEKA3338Durchmesser  	= 230+115;
+ClatronicEKA3338Durchmesser  	= 230+116;
 BlechHoehe          = 2;
 FilterBreite        = 1.3;
 SchlitzLaenge       = 40;
