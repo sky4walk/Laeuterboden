@@ -112,6 +112,41 @@ module LaeuterBlechSchlitz(Durchmesser,Laenge,Breite,Hoehe,BohrLoch)
     }
 }
 
+module LaeuterBlechSchlitzRund(Durchmesser,Laenge,Breite,Hoehe,BohrLoch)
+{
+    abFakX = 1.3;
+    radius = Durchmesser/2;
+    DurchmesserInnen = Durchmesser - Laenge;
+    innerQuadrat = radius * sqrt(2);
+    abstand = radius-sqrt(radius*radius - innerQuadrat*innerQuadrat/4);
+    
+    difference() {
+        BodenBlech(radius,Hoehe);
+        translate([0,0,-1])
+            BodenBlech(DurchmesserInnen/2,Hoehe*3);
+    }
+    
+    difference() {
+        BodenBlech(DurchmesserInnen/2,Hoehe);
+        
+        translate([-DurchmesserInnen/2,-DurchmesserInnen/2,-1])
+            BodenOeffnungenSchlitz(
+                DurchmesserInnen+Laenge,
+                Laenge,
+                Breite,
+                Hoehe*3,
+                abFakX,4);
+        
+        Bohrloch (BohrLoch,  -radius+abstand,0,Hoehe*3);
+        Bohrloch (BohrLoch,   radius-abstand,0,Hoehe*3);
+        Bohrloch (BohrLoch,0, radius-abstand,  Hoehe*3);
+        Bohrloch (BohrLoch,0,-radius+abstand,  Hoehe*3);
+        Bohrloch (BohrLoch,0,0,Hoehe*3);
+        
+    }
+    
+}
+
 module LaeuterBlechLoch(Durchmesser,Filter,Breite,Hoehe,Schraube)
 {
     radius = Durchmesser/2;
@@ -132,12 +167,14 @@ module LaeuterBlechLoch(Durchmesser,Filter,Breite,Hoehe,Schraube)
 projection() 
 { 
     
-    LaeuterBlechSchlitz(
+    LaeuterBlechSchlitzRund(
 //        MattMillDurchmesser,
         ClatronicEKA3338Durchmesser,
         SchlitzLaenge,
         FilterBreite,
         BlechHoehe,
         SchraubeM5);
+    
+    
 }
 
