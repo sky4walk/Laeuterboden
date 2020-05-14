@@ -23,6 +23,16 @@ module Schlitz(laenge,breite,hoehe,posX,posY)
   */
 }
 
+module Vessel(r,h)
+{
+  cylinder (r, h);
+  translate([0,0,2.9]) cylinder (r=8, h=20); 
+  hull(){
+    translate([0,0,30]) sphere (15, center=true);
+    translate([0,0,60]) sphere (5);
+  }
+}
+
 module Laeuterloch(Durchmesser,Hoehe,posX,posY) 
 {
     translate([posX,posY,-1])
@@ -163,6 +173,8 @@ module LaeuterBlechLoch(Durchmesser,Filter,Breite,Hoehe,Schraube)
     }
 }
 
+//Vessel(15,3);
+
 // 2D Projektion fuer SVG Datei
 projection() 
 { 
@@ -177,4 +189,3 @@ projection()
     
     
 }
-
