@@ -3,7 +3,7 @@
 
 MattMillDurchmesser 			= 497;
 ClatronicEKA3338Durchmesser  	= 230+116;
-BlechHoehe          = 2;
+BlechHoehe          = 1;
 FilterBreite        = 1.3;
 SchlitzLaenge       = 40;
 SchraubeM5          = 5.5;
