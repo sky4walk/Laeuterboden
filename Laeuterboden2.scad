@@ -7,6 +7,9 @@ BottichHoehe             = 382;
 LaeuterblechDicke        = 1;
 LaeuterblechWinkel       = 120;
 LaeuterblechAuflage      = 120;
+SchlitzLaenge            = 27;
+SchlitzBreite            = 1.2;
+SchlitzAbstandX          = 42;
 
 $fn=100;
 
@@ -69,6 +72,29 @@ module BlechHalbe2DSpiegeln(hohe,d1,d2,dicke,winkel,auflage)
         BlechHalbeFlach(hohe,d1,d2,dicke,winkel,auflage);
 }
 
+module Schlitz(laenge,breite,hoehe,posX,posY) 
+{
+    translate([posX,posY,-hoehe/4])
+        minkowski()
+        {
+            cube([laenge,breite/2,hoehe]);
+            cylinder(r=breite/4,hoehe/2);
+        }  
+}
+
+module SchlitzeXDir(laenge,breite,hoehe,d2,auflage,winkel, abstand)
+{
+    wb = ( 180 - winkel ) / 2;
+    radius = d2 / 2;
+    distBoden = sqrt(radius*radius - (auflage/2)*(auflage/2));
+    lenC = distBoden / cos(wb);
+    count = lenC * 2 / abstand;
+    for ( x = [0 : count-1] ) {        
+        Schlitz(Laenge,Breite,Hoehe,pX,pY);
+    }
+}
+
+/*
 BlechHalbe2DSpiegeln(
     BottichHoehe,
     BottichDurchmesserDeckel,
@@ -76,6 +102,8 @@ BlechHalbe2DSpiegeln(
     LaeuterblechDicke,
     LaeuterblechWinkel,
     LaeuterblechAuflage);
+*/
+Schlitz(SchlitzLaenge,SchlitzBreite,LaeuterblechDicke,0,0);
 
 
 // 2D Projektion fuer SVG Datei
