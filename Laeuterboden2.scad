@@ -14,7 +14,7 @@ SchlitzAbstandY          = 4;
 SchlitzVersatz           = 20;
 LaeuterblechRand         = 6;
 
-//$fn=20;
+$fn=100;
 
 module Laeuterbottich(hoehe, d_oben, d_unten)
 {
@@ -76,6 +76,16 @@ module BlechHalbe2DSpiegeln(hohe,d1,d2,dicke,winkel,auflage)
         BlechHalbeFlach(hohe,d1,d2,dicke,winkel,auflage);
 }
 
+module BlechCutOut(hohe,d1,d2,dicke,winkel,auflage)
+{
+    difference()
+    {
+        BlechHalbe2DSpiegeln(hohe,d1,d2,dicke,winkel,auflage);
+        translate([0,0,-1])
+        cylinder(hohe+2, d2/2, d2/2, center=false);
+    }
+}
+
 module Schlitz(laenge,breite,hoehe,posX,posY) 
 {
     translate([posX,posY,-hoehe/4])
@@ -84,109 +94,28 @@ module Schlitz(laenge,breite,hoehe,posX,posY)
             cube([laenge,breite/2,hoehe]);
             cylinder(r=breite/4,hoehe/2);
         }  
+
 }
 
-module SchlitzeXDir(laenge,breite,hoehe,d2,auflage,winkel, abstand, start, posY)
+module Schlitze(laenge,breite,hoehe,d2,abstandX,abstandY,versatz)
 {
-    wb = ( 180 - winkel ) / 2;
-    radius = d2 / 2;
-    distBoden = sqrt(radius*radius - (auflage/2)*(auflage/2));
-    lenC = distBoden / cos(wb);
-    count = lenC * 2 / abstand;
-    echo(lenC);
-    echo(count);
-    for ( x = [0 : count-1] ) {        
-        Schlitz(laenge,breite,hoehe,start + abstand * x,posY);
+    cx = d2 / abstandX;
+    cy = d2 / abstandY;
+    for ( y = [0 : cy] ) {
+        for ( x = [0 : cx] ) {
+            if ( y % 2 == 0 ) {
+                Schlitz(laenge,breite,hoehe,x*abstandX-d2/2,y*abstandY-d2/2);
+            } else {
+                Schlitz(laenge,breite,hoehe,x*abstandX-d2/2+versatz,y*abstandY-d2/2);
+            }
+        }
     }
 }
 
-module SchlitzeYDir(
-    laenge,
-    breite,
-    hoehe,d1,d2,
-    bHoehe,
-    auflage,
-    winkel, 
-    abstandX, 
-    abstandY, 
-    versatz)
-{
-    wb = ( 180 - winkel ) / 2;
-    radius = d2 / 2;
-    distBoden = sqrt(radius*radius - (auflage/2)*(auflage/2));
-    lenH = distBoden * tan(wb);
-    echo(distBoden);
-    echo(lenH);
-    
-    deltaD = d1 - d2;
-    rh = (deltaD/2 * lenH / bHoehe)*2 + d2;
-    echo(rh);
-    count = rh / abstandY;
-    for ( x = [0 : count-1] ) {
-       if ( x % 2 == 0) { 
-        SchlitzeXDir(
-            laenge,
-            breite,
-            hoehe,
-            d2,
-            auflage,
-            winkel,
-            abstandX,
-            0,
-            x*abstandY);
-       } else {
-        SchlitzeXDir(
-            laenge,
-            breite,
-            hoehe,
-            d2,
-            auflage,
-            winkel,
-            abstandX,
-            versatz,
-            x*abstandY);
-       }
-    }
-}
-module Schlitze(
-    lange, 
-    breite, 
-    dicke, 
-    d1, d2, 
-    bHoehe, 
-    auflage, 
-    winkel,
-    abstandX,
-    abstandY,
-    versatz ) 
-{
 
-    intersection()
-    { 
-        cylinder(
-            dicke, 
-            d2/2, 
-            d2/2, 
-            center=true);
-        translate([-d2/2,-d2/2,-2])
-            SchlitzeYDir(
-                lange,
-                breite,
-                dicke+3,
-                d1,
-                d2,
-                bHoehe,
-                auflage,
-                winkel,
-                abstandX,
-                abstandY,
-                versatz);
-    }
-
-}
 
 module LaeuterBlechNeu(
-    lange, 
+    laenge, 
     breite, 
     dicke, 
     d1, d2, 
@@ -197,35 +126,29 @@ module LaeuterBlechNeu(
     abstandY,
     versatz)
 {
+    
+    BlechCutOut(bHoehe,d1,d2,dicke,winkel,auflage);
     difference()
     {
-    BlechHalbe2DSpiegeln(bHoehe,d1,d2,dicke,winkel,auflage);
-    translate([0,0,-1])
-        Schlitze(
-            lange,
-            breite,
-            dicke+4,
-            d1,
-            d2,
-            bHoehe,
-            auflage,
-            winkel,
-            abstandX,
-            abstandY,
-            versatz);
-        
-    }   
+        translate([0,0,0])
+            cylinder(dicke, d2/2, d2/2, center=false);
+        Schlitze(laenge,breite,dicke,d2,abstandX,abstandY,versatz);
+    }
+    
 }
 
-LaeuterBlechNeu(
-    SchlitzLaenge,
-    SchlitzBreite,
-    LaeuterblechDicke,
-    BottichDurchmesserDeckel,
-    BottichDurchmesserBoden,
-    BottichHoehe,
-    LaeuterblechAuflage,
-    LaeuterblechWinkel,
-    SchlitzAbstandX,
-    SchlitzAbstandY,
-    SchlitzVersatz);
+projection() 
+{ 
+    LaeuterBlechNeu(
+        SchlitzLaenge,
+        SchlitzBreite,
+        LaeuterblechDicke,
+        BottichDurchmesserDeckel,
+        BottichDurchmesserBoden,
+        BottichHoehe,
+        LaeuterblechAuflage,
+        LaeuterblechWinkel,
+        SchlitzAbstandX,
+        SchlitzAbstandY,
+        SchlitzVersatz);
+}
