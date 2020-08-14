@@ -10,8 +10,11 @@ LaeuterblechAuflage      = 120;
 SchlitzLaenge            = 27;
 SchlitzBreite            = 1.2;
 SchlitzAbstandX          = 42;
+SchlitzAbstandY          = 4;
+SchlitzVersatz           = 20;
+LaeuterblechRand         = 6;
 
-$fn=100;
+//$fn=20;
 
 module Laeuterbottich(hoehe, d_oben, d_unten)
 {
@@ -59,6 +62,7 @@ module BlechHalbeFlach(hohe,d1,d2,dicke,winkel,auflage)
     wb = ( 180 - winkel ) / 2;
     radius = d2 / 2;
     abstand = radius - sqrt(radius*radius - (auflage/2)*(auflage/2));
+    echo(abstand);
     translate([-radius-abstand,0,0])
         rotate([0,wb,0])
             translate([radius-abstand,0,0])
@@ -82,32 +86,146 @@ module Schlitz(laenge,breite,hoehe,posX,posY)
         }  
 }
 
-module SchlitzeXDir(laenge,breite,hoehe,d2,auflage,winkel, abstand)
+module SchlitzeXDir(laenge,breite,hoehe,d2,auflage,winkel, abstand, start, posY)
 {
     wb = ( 180 - winkel ) / 2;
     radius = d2 / 2;
     distBoden = sqrt(radius*radius - (auflage/2)*(auflage/2));
     lenC = distBoden / cos(wb);
     count = lenC * 2 / abstand;
+    echo(lenC);
+    echo(count);
     for ( x = [0 : count-1] ) {        
-        Schlitz(Laenge,Breite,Hoehe,pX,pY);
+        Schlitz(laenge,breite,hoehe,start + abstand * x,posY);
     }
 }
 
-/*
-BlechHalbe2DSpiegeln(
-    BottichHoehe,
+module SchlitzeYDir(
+    laenge,
+    breite,
+    hoehe,d1,d2,
+    bHoehe,
+    auflage,
+    winkel, 
+    abstandX, 
+    abstandY, 
+    versatz)
+{
+    wb = ( 180 - winkel ) / 2;
+    radius = d2 / 2;
+    distBoden = sqrt(radius*radius - (auflage/2)*(auflage/2));
+    lenH = distBoden * tan(wb);
+    echo(distBoden);
+    echo(lenH);
+    
+    deltaD = d1 - d2;
+    rh = (deltaD/2 * lenH / bHoehe)*2 + d2;
+    echo(rh);
+    count = rh / abstandY;
+    for ( x = [0 : count-1] ) {
+       if ( x % 2 == 0) { 
+        SchlitzeXDir(
+            laenge,
+            breite,
+            hoehe,
+            d2,
+            auflage,
+            winkel,
+            abstandX,
+            0,
+            x*abstandY);
+       } else {
+        SchlitzeXDir(
+            laenge,
+            breite,
+            hoehe,
+            d2,
+            auflage,
+            winkel,
+            abstandX,
+            versatz,
+            x*abstandY);
+       }
+    }
+}
+module Schlitze(
+    lange, 
+    breite, 
+    dicke, 
+    d1, d2, 
+    bHoehe, 
+    auflage, 
+    winkel,
+    abstandX,
+    abstandY,
+    versatz ) 
+{
+
+    intersection()
+    { 
+        cylinder(
+            dicke, 
+            d2/2, 
+            d2/2, 
+            center=true);
+        translate([-d2/2,-d2/2,-2])
+            SchlitzeYDir(
+                lange,
+                breite,
+                dicke+3,
+                d1,
+                d2,
+                bHoehe,
+                auflage,
+                winkel,
+                abstandX,
+                abstandY,
+                versatz);
+    }
+
+}
+
+module LaeuterBlechNeu(
+    lange, 
+    breite, 
+    dicke, 
+    d1, d2, 
+    bHoehe, 
+    auflage, 
+    winkel,
+    abstandX,
+    abstandY,
+    versatz)
+{
+    difference()
+    {
+    BlechHalbe2DSpiegeln(bHoehe,d1,d2,dicke,winkel,auflage);
+    translate([0,0,-1])
+        Schlitze(
+            lange,
+            breite,
+            dicke+4,
+            d1,
+            d2,
+            bHoehe,
+            auflage,
+            winkel,
+            abstandX,
+            abstandY,
+            versatz);
+        
+    }   
+}
+
+LaeuterBlechNeu(
+    SchlitzLaenge,
+    SchlitzBreite,
+    LaeuterblechDicke,
     BottichDurchmesserDeckel,
     BottichDurchmesserBoden,
-    LaeuterblechDicke,
+    BottichHoehe,
+    LaeuterblechAuflage,
     LaeuterblechWinkel,
-    LaeuterblechAuflage);
-*/
-Schlitz(SchlitzLaenge,SchlitzBreite,LaeuterblechDicke,0,0);
-
-
-// 2D Projektion fuer SVG Datei
-projection() 
-{ 
-   
-}
+    SchlitzAbstandX,
+    SchlitzAbstandY,
+    SchlitzVersatz);
