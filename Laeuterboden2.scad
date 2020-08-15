@@ -5,14 +5,14 @@ BottichDurchmesserDeckel = 350;
 BottichDurchmesserBoden  = 322;
 BottichHoehe             = 382;
 LaeuterblechDicke        = 1;
-LaeuterblechWinkel       = 120;
+LaeuterblechWinkel       = 146;
 LaeuterblechAuflage      = 120;
 SchlitzLaenge            = 27;
 SchlitzBreite            = 1.2;
 SchlitzAbstandX          = 42;
 SchlitzAbstandY          = 4;
 SchlitzVersatz           = 20;
-LaeuterblechRand         = 6;
+LaeuterblechRand         = 20;
 
 $fn=100;
 
@@ -28,7 +28,7 @@ module Ebene(dicke, breite, winkel,auflage)
     abstand = radius - sqrt(radius*radius - (auflage/2)*(auflage/2));
     translate([-radius+abstand,-breite,0])
         rotate ([0,-wb,0])
-            cube([breite*2,breite*2,1],center=false);
+            cube([breite*2,breite*2,dicke],center=false);
 }
 
 module BottichSchnitt(hohe,d1,d2,dicke,winkel,auflage)
@@ -61,11 +61,11 @@ module BlechHalbeFlach(hohe,d1,d2,dicke,winkel,auflage)
 {
     wb = ( 180 - winkel ) / 2;
     radius = d2 / 2;
-    abstand = radius - sqrt(radius*radius - (auflage/2)*(auflage/2));
-    echo(abstand);
-    translate([-radius-abstand,0,0])
+    laenge = sqrt(radius*radius - (auflage/2)*(auflage/2));
+    abstand = laenge / cos(wb);    
+    translate([-abstand,0,0])
         rotate([0,wb,0])
-            translate([radius-abstand,0,0])
+            translate([laenge,0,0])
                 BlechHalbe(hohe,d1,d2,dicke,winkel,auflage);
 }
 
@@ -76,13 +76,13 @@ module BlechHalbe2DSpiegeln(hohe,d1,d2,dicke,winkel,auflage)
         BlechHalbeFlach(hohe,d1,d2,dicke,winkel,auflage);
 }
 
-module BlechCutOut(hohe,d1,d2,dicke,winkel,auflage)
+module BlechCutOut(hohe,d1,d2,dicke,winkel,auflage,rand)
 {
     difference()
     {
-        BlechHalbe2DSpiegeln(hohe,d1,d2,dicke,winkel,auflage);
+        BlechHalbeFlach(hohe,d1,d2,dicke,winkel,auflage);
         translate([0,0,-1])
-        cylinder(hohe+2, d2/2, d2/2, center=false);
+          BlechHalbeFlach(hohe,d1-rand,d2-rand,dicke+2,winkel,auflage);        
     }
 }
 
@@ -99,8 +99,8 @@ module Schlitz(laenge,breite,hoehe,posX,posY)
 
 module Schlitze(laenge,breite,hoehe,d2,abstandX,abstandY,versatz)
 {
-    cx = d2 / abstandX;
-    cy = d2 / abstandY;
+    cx = d2 / abstandX / 2;
+    cy = d2 / abstandY ;
     for ( y = [0 : cy] ) {
         for ( x = [0 : cx] ) {
             if ( y % 2 == 0 ) {
@@ -114,7 +114,7 @@ module Schlitze(laenge,breite,hoehe,d2,abstandX,abstandY,versatz)
 
 
 
-module LaeuterBlechNeu(
+module LaeuterBlechSchlitzeHalbe(
     laenge, 
     breite, 
     dicke, 
@@ -124,22 +124,60 @@ module LaeuterBlechNeu(
     winkel,
     abstandX,
     abstandY,
-    versatz)
+    versatz,
+    rand)
 {
-    
-    BlechCutOut(bHoehe,d1,d2,dicke,winkel,auflage);
+    BlechCutOut(bHoehe,d1,d2,dicke,winkel,auflage,rand);   
     difference()
     {
-        translate([0,0,0])
-            cylinder(dicke, d2/2, d2/2, center=false);
+        BlechHalbeFlach(bHoehe,d1-rand,d2-rand,dicke,winkel,auflage);
         Schlitze(laenge,breite,dicke,d2,abstandX,abstandY,versatz);
-    }
-    
+    }       
+}
+
+module LaeuterBlechSchlitzeMirror(
+    laenge, 
+    breite, 
+    dicke, 
+    d1, d2, 
+    bHoehe, 
+    auflage, 
+    winkel,
+    abstandX,
+    abstandY,
+    versatz,
+    rand)
+{
+    LaeuterBlechSchlitzeHalbe(
+        laenge,
+        breite,
+        dicke,
+        d1, d2,
+        bHoehe,
+        auflage,
+        winkel,
+        abstandX,
+        abstandY,
+        versatz,
+        rand);
+    mirror([1,0,0])
+        LaeuterBlechSchlitzeHalbe(
+            laenge,
+            breite,
+            dicke,
+            d1, d2,
+            bHoehe,
+            auflage,
+            winkel,
+            abstandX,
+            abstandY,
+            versatz,
+            rand);
 }
 
 projection() 
 { 
-    LaeuterBlechNeu(
+    LaeuterBlechSchlitzeMirror(
         SchlitzLaenge,
         SchlitzBreite,
         LaeuterblechDicke,
@@ -150,5 +188,59 @@ projection()
         LaeuterblechWinkel,
         SchlitzAbstandX,
         SchlitzAbstandY,
-        SchlitzVersatz);
+        SchlitzVersatz,
+        LaeuterblechRand);
 }
+
+/*
+LaeuterBlechSchlitzeHalbe(
+        SchlitzLaenge,
+        SchlitzBreite,
+        LaeuterblechDicke,
+        BottichDurchmesserDeckel,
+        BottichDurchmesserBoden,
+        BottichHoehe,
+        LaeuterblechAuflage,
+        LaeuterblechWinkel,
+        SchlitzAbstandX,
+        SchlitzAbstandY,
+        SchlitzVersatz,
+        LaeuterblechRand);
+*/
+/*
+BlechCutOut(
+    BottichHoehe,
+    BottichDurchmesserDeckel,
+    BottichDurchmesserBoden,
+    LaeuterblechDicke,
+    LaeuterblechWinkel,
+    LaeuterblechAuflage,
+    LaeuterblechRand);
+*/
+/*
+BlechHalbe2DSpiegeln(
+    BottichHoehe,
+    BottichDurchmesserDeckel,
+    BottichDurchmesserBoden,
+    LaeuterblechDicke,
+    LaeuterblechWinkel,
+    LaeuterblechAuflage);
+*/
+/*
+BlechHalbeFlach(
+    BottichHoehe,
+    BottichDurchmesserDeckel,
+    BottichDurchmesserBoden,
+    LaeuterblechDicke,
+    LaeuterblechWinkel,
+    LaeuterblechAuflage);
+*/
+/*
+BlechHalbe(
+    BottichHoehe,
+    BottichDurchmesserDeckel,
+    BottichDurchmesserBoden,
+    LaeuterblechDicke,
+    LaeuterblechWinkel,
+    LaeuterblechAuflage);    
+*/
