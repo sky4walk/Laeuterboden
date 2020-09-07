@@ -10,6 +10,7 @@ SchlitzBreite            = 1.2;
 SchlitzAbstandX          = 42;
 SchlitzAbstandY          = 4;
 SchlitzVersatz           = 20;
+SchraubeM5               = 5.5;
 
 $fn=100;
 
@@ -21,6 +22,20 @@ module RundBlech(
 {
     durchm = d - ab*2 - rand*2;
     cylinder(h=hoehe,r=durchm/2,center=false);
+}
+
+module Bohrloch(
+    d,
+    posX,
+    posY,
+    hoehe) 
+{
+    translate([posX,posY,-1])
+        cylinder(
+            hoehe,
+            d/2,
+            d/2,
+            center = false);
 }
 
 module Schlitz(laenge,breite,hoehe,posX,posY) 
@@ -115,13 +130,90 @@ module BlechSchlitze(
 
 }
 
-BlechSchlitze(
-    BottichDurchmesser,
-    BottichDistanz,
-    BlechRand,
-    BlechDicke,
-    SchlitzLaenge,
-    SchlitzBreite,
-    SchlitzAbstandX,
-    SchlitzAbstandY,
-    SchlitzVersatz);
+module BlechSchlitzeLoecher(
+    d, 
+    ab, 
+    rand, 
+    hoehe,
+    laenge,
+    breite,
+    abstandX,
+    abstandY,
+    versatz,
+    ds)
+{
+    rPos = d/2 - ab - rand;  
+    difference()
+    {
+        BlechSchlitze(
+            d, 
+            ab, 
+            rand, 
+            hoehe,
+            laenge,
+            breite,
+            abstandX,
+            abstandY,
+            versatz);
+        
+        Bohrloch(
+            ds,
+            0,
+            0,
+            hoehe*3);
+        Bohrloch(
+            ds,
+            rPos,
+            0,
+            hoehe*3);
+        Bohrloch(
+            ds,
+            -rPos,
+            0,
+            hoehe*3);
+        Bohrloch(
+            ds,
+            0,
+            rPos,
+            hoehe*3);
+        Bohrloch(
+            ds,
+            0,
+            -rPos,
+            hoehe*3);
+        Bohrloch(
+            ds,
+            rPos*sin(45),
+            rPos*cos(45),
+            hoehe*3);
+        Bohrloch(
+            ds,
+            rPos*sin(45),
+            -rPos*cos(45),
+            hoehe*3);
+        Bohrloch(
+            ds,
+            -rPos*sin(45),
+            rPos*cos(45),
+            hoehe*3);
+        Bohrloch(
+            ds,
+            -rPos*sin(45),
+            -rPos*cos(45),
+            hoehe*3);        
+    }
+}
+projection()
+{
+    BlechSchlitzeLoecher(
+        BottichDurchmesser,
+        BottichDistanz,
+        BlechRand,
+        BlechDicke,
+        SchlitzLaenge,
+        SchlitzBreite,
+        SchlitzAbstandX,
+        SchlitzAbstandY,
+        SchlitzVersatz,
+        SchraubeM5);
+}
