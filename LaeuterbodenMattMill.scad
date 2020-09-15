@@ -3,13 +3,13 @@
 
 BottichDurchmesser       = 450;
 BottichDistanz           = 1.5;
-BlechDicke               = 2;
-BlechRand                = 10;
-SchlitzLaenge            = 27;
-SchlitzBreite            = 1.2;
-SchlitzAbstandX          = 42;
+BlechDicke               = 1;
+BlechRand                = 8;
+SchlitzLaenge            = 31;
+SchlitzBreite            = 1.3;
+SchlitzAbstandX          = 50;
 SchlitzAbstandY          = 4;
-SchlitzVersatz           = 20;
+SchlitzVersatz           = 25;
 SchraubeM5               = 5.5;
 
 $fn=100;
@@ -203,7 +203,7 @@ module BlechSchlitzeLoecher(
             hoehe*3);        
     }
 }
-projection()
+//projection()
 {
     BlechSchlitzeLoecher(
         BottichDurchmesser,
