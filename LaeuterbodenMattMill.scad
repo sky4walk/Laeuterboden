@@ -2,7 +2,8 @@
 // github@AndreBetz.de
 
 BottichDurchmesser       = 450;
-BottichDistanz           = 1.5;
+BottichWandDicke         = 0.8;
+BottichDistanz           = 0.7;
 BlechDicke               = 1;
 BlechRand                = 8;
 SchlitzLaenge            = 31;
@@ -132,7 +133,8 @@ module BlechSchlitze(
 
 module BlechSchlitzeLoecher(
     d, 
-    ab, 
+    wandDicke,
+    wandDist,
     rand, 
     hoehe,
     laenge,
@@ -142,12 +144,13 @@ module BlechSchlitzeLoecher(
     versatz,
     ds)
 {
+    ab = wandDicke+wandDist;
     rPos = d/2 - ab - rand;  
     difference()
     {
         BlechSchlitze(
             d, 
-            ab, 
+            ab,
             rand, 
             hoehe,
             laenge,
@@ -203,11 +206,12 @@ module BlechSchlitzeLoecher(
             hoehe*3);        
     }
 }
-//projection()
+projection()
 {
     BlechSchlitzeLoecher(
         BottichDurchmesser,
-        BottichDistanz,
+        BottichWandDicke,
+        BottichDistanz,        
         BlechRand,
         BlechDicke,
         SchlitzLaenge,
