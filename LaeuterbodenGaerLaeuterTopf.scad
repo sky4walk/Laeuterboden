@@ -148,7 +148,8 @@ module BlechSchlitzeLoecher(
     ds)
 {   
     ab = wandDicke+wandDist;
-    rPos = d/2 - ab - rand;  
+    rPos = d/2 - ab - rand; 
+    rPos2 = (d*3/4-rand) / 2;
     difference()
     {
         union ()
@@ -173,6 +174,22 @@ module BlechSchlitzeLoecher(
                 rotate([0,0,-45])
                   cube([rand,d-2*ab,hoehe],true);
             }
+            difference()
+            {
+                RundBlech(
+                  d*3/4,
+                  0,
+                  0,
+                  hoehe);
+                translate([0,0,-hoehe/2]) 
+                {
+                  RundBlech(
+                    d*3/4-rand*2,
+                    0,
+                    0,
+                    hoehe*3);
+                }
+            }
         }
         Bohrloch(
             ds,
@@ -181,43 +198,43 @@ module BlechSchlitzeLoecher(
             hoehe*3);
         Bohrloch(
             ds,
-            rPos,
+            rPos2,
             0,
             hoehe*3);
         Bohrloch(
             ds,
-            -rPos,
+            -rPos2,
             0,
             hoehe*3);
         Bohrloch(
             ds,
             0,
-            rPos,
+            rPos2,
             hoehe*3);
         Bohrloch(
             ds,
             0,
-            -rPos,
+            -rPos2,
             hoehe*3);
         Bohrloch(
             ds,
-            rPos*sin(45),
-            rPos*cos(45),
+            rPos2*sin(45),
+            rPos2*cos(45),
             hoehe*3);
         Bohrloch(
             ds,
-            rPos*sin(45),
-            -rPos*cos(45),
+            rPos2*sin(45),
+            -rPos2*cos(45),
             hoehe*3);
         Bohrloch(
             ds,
-            -rPos*sin(45),
-            rPos*cos(45),
+            -rPos2*sin(45),
+            rPos2*cos(45),
             hoehe*3);
         Bohrloch(
             ds,
-            -rPos*sin(45),
-            -rPos*cos(45),
+            -rPos2*sin(45),
+            -rPos2*cos(45),
             hoehe*3);        
     }
 }
