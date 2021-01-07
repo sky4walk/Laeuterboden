@@ -238,7 +238,7 @@ module BlechSchlitzeLoecher(
             hoehe*3);        
     }
 }
-projection()
+//projection()
 {
     BlechSchlitzeLoecher(
         BottichUmfang / PI,
