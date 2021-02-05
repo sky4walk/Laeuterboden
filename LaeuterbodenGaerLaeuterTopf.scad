@@ -4,7 +4,7 @@
 // der Stelle mit Massband
 BottichUmfang            = 1376;
 BottichWandDicke         = 0.8;
-BottichDistanz           = 0.4;
+BottichDistanz           = 1.0;
 BlechDicke               = 1;
 BlechRand                = 8;
 SchlitzLaenge            = 31;
@@ -238,7 +238,7 @@ module BlechSchlitzeLoecher(
             hoehe*3);        
     }
 }
-//projection()
+projection()
 {
     BlechSchlitzeLoecher(
         BottichUmfang / PI,
