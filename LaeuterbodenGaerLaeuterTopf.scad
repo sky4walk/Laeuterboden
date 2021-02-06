@@ -4,7 +4,7 @@
 // der Stelle mit Massband
 BottichUmfang            = 1376;
 BottichWandDicke         = 0.8;
-BottichDistanz           = 1.0;
+BottichDistanz           = 2.6; // adopted to d=431mm 
 BlechDicke               = 1;
 BlechRand                = 8;
 SchlitzLaenge            = 31;
