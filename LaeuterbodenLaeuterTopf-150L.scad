@@ -7,10 +7,10 @@ BottichWandDicke         = 0;
 BottichDistanz           = 1.5; // adopted to d=431mm 
 BlechDicke               = 1;
 BlechRand                = 8;
-SchlitzLaenge            = 31;
+SchlitzLaenge            = 35;//31;
 SchlitzBreite            = 1.3;
 SchlitzAbstandX          = 50;
-SchlitzAbstandY          = 4;
+SchlitzAbstandY          = 10;
 SchlitzVersatz           = 25;
 SchraubeM5               = 5.5;
 
@@ -168,30 +168,32 @@ module BlechSchlitzeLoecher(
             translate([0,0,hoehe/2]) 
             {
                 cube([d-2*ab,rand,hoehe],true);
-                cube([rand,d-2*ab,hoehe],true);
-                rotate([0,0,45])
-                  cube([rand,d-2*ab,hoehe],true);
-                rotate([0,0,-45])
-                  cube([rand,d-2*ab,hoehe],true);
+            //    cube([rand,d-2*ab,hoehe],true);
+            /*    rotate([0,0,45])
+                  cube([rand,d-2*ab,hoehe],true); */
+            /*    rotate([0,0,-45])
+                  cube([rand,d-2*ab,hoehe],true); */
             }
             
-            
+            /*
             difference()
             {
                 RundBlech(
-                  d*6/8,
+                  d*5/8,
                   0,
                   0,
                   hoehe);
                 translate([0,0,-hoehe/2]) 
                 {
                   RundBlech(
-                    d*6/8-rand*2,
+                    d*5/8-rand*2,
                     0,
                     0,
                     hoehe*3);
                 }
             }
+            */
+            /*
             difference()
             {
                 RundBlech(
@@ -208,7 +210,7 @@ module BlechSchlitzeLoecher(
                     hoehe*3);
                 }
             }
-            
+            */
         }
         Bohrloch(
             ds,
